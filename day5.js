@@ -1,14 +1,14 @@
 var fs = require('fs')
 
 if (!Array.prototype.includes) {
-  Array.prototype.includes = function(searchElement, fromIndex ) {
+  Array.prototype.includes = function (searchElement, fromIndex ) {
     'use strict'
     var O = Object(this)
-    var len = parseInt(O.length) || 0
+    var len = parseInt(O.length, 10) || 0
     if (len === 0) {
       return false
     }
-    var n = parseInt(arguments[1]) || 0
+    var n = parseInt(arguments[1], 10) || 0
     var k
     if (n >= 0) {
       k = n
@@ -40,7 +40,7 @@ function readInput (input) {
 
 function numberOfNiceWords (words) {
   var niceWords = 0
-  words.forEach(function (c, i) {
+  words.forEach(function (c) {
     if (isNiceWord(c)) {
       niceWords++
     }
@@ -48,10 +48,11 @@ function numberOfNiceWords (words) {
   return niceWords
 }
 
-function isNiceWord (word) {
+function isNiceWordOld (word) {
   var vowels = ['a', 'e', 'i', 'o', 'u']
   var numberOfVowels = 0
-  var containsDoubleChar = false, noBadStrings = true
+  var containsDoubleChar = false
+  var noBadStrings = true
   var prevChar, currentChar
   for (var i = 0; i < word.length; i++) {
     currentChar = word[i]
@@ -69,8 +70,41 @@ function isNiceWord (word) {
   return (numberOfVowels >= 3 && containsDoubleChar && noBadStrings)
 }
 
+function isNiceWord (word) {
+  return findTwiceOccurringPair(word) && findRepeatedCharacter(word)
+
+  function findTwiceOccurringPair (string) {
+    if (string.length < 4) return false
+    for (var i = 0; i < string.length - 1; i++) {
+      var current = string[i] + string[i + 1]
+      for (var j = i + 2; j < string.length; j++) {
+        if (current === (string[j] + string[j + 1])) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  function findRepeatedCharacter (string) {
+    for (var i = 2; i < string.length; i++) {
+      var prevChar = string[i - 2]
+      var curChar = string[i]
+      if (prevChar === curChar) {
+        return true
+      }
+    }
+    return false
+  }
+}
+
 function partOne () {
-  console.log(numberOfNiceWords(readInput('./day5input.txt')))
+  // console.log(`Part One: ${numberOfNiceWords(readInput('./day5input.txt'))}`)
+}
+
+function partTwo () {
+  console.log(`Part Two: ${numberOfNiceWords(readInput('./day5input.txt'))}`)
 }
 
 partOne()
+partTwo()
